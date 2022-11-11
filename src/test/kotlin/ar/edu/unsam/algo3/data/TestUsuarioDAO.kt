@@ -1,10 +1,9 @@
-package ar.edu.unsam.algo3.controller
+package ar.edu.unsam.algo3.data
 
-import ar.edu.unsam.algo3.data.UsuarioDAO
 import ar.edu.unsam.algo3.domain.Usuario
 import ar.edu.unsam.algo3.utils.Logger
 
-const val TAG = "TestDatabaseConnection"
+const val TAG = "TestUsuarioDAO"
 
 fun main(args: Array<String>) {
     val id = 11
