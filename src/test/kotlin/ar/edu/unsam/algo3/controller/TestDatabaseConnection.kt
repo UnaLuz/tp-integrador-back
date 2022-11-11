@@ -1,26 +1,26 @@
 package ar.edu.unsam.algo3.controller
 
+import ar.edu.unsam.algo3.data.UsuarioDAO
+import ar.edu.unsam.algo3.domain.Usuario
 import ar.edu.unsam.algo3.utils.Logger
-import java.sql.DriverManager
-import java.sql.SQLException
 
 const val TAG = "TestDatabaseConnection"
 
 fun main(args: Array<String>) {
-    val url =
-        "jdbc:mysql://localhost:3306/tpintegrador?useSSL=false&useTimezone=true&serverTimezone=UTC&allowPublicKeyRetrieval=true"
 
-    try {
-        val conexion = DriverManager.getConnection(url, "root", "root")
+    Logger.debug(TAG, "--- Insert Usuario ---")
+    val resultado = UsuarioDAO.insert(
+        Usuario(
+            nombre = "Pepita",
+            apellido = null,
+            password = "",
+            fechaNacimiento = "2022-11-10"
+        )
+    )
+    Logger.debug(TAG, "Se insertaron $resultado usuario/s")
 
-        val sentencia = conexion.createStatement()
-        val sql = "SELECT id_usuario, nombre, apellido FROM usuario"
-        val resultSet = sentencia.executeQuery(sql)
-
-        while (resultSet.next()) {
-            Logger.debug(TAG, "id_usuario: ${resultSet.getInt("id_usuario")}")
-        }
-    } catch (sqlException: SQLException) {
-        Logger.error(tag = TAG, message = "Fallo al iniciar conexion con mysql", exception = sqlException)
-    }
+    Logger.debug(TAG, "--- Select Usuarios ---")
+    UsuarioDAO.selectAll()?.forEach { usuario ->
+        Logger.debug(TAG, usuario.toString())
+    } ?: Logger.debug(TAG, "La lista de usuarios no pudo ser recuperada")
 }
