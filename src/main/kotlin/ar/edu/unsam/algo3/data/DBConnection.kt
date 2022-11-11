@@ -17,9 +17,10 @@ object DBConnection {
     private const val DB_CONNECTION_URL =
         """jdbc:mysql://%s:%s/%s?useSSL=false&useTimezone=true&serverTimezone=UTC&allowPublicKeyRetrieval=true"""
 
-    fun <T> executeQuery(query: String, block: (ResultSet) -> T) =
+    fun <T> executeQuery(query: String, setValuesBlock: ((PreparedStatement) -> Unit)? = null, block: (ResultSet) -> T) =
         useStatement(query) { statement ->
             try {
+                setValuesBlock?.invoke(statement)
                 statement.executeQuery().use { resultSet ->
                     block(resultSet)
                 }
