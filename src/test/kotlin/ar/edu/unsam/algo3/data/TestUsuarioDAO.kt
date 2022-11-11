@@ -6,7 +6,7 @@ import ar.edu.unsam.algo3.utils.Logger
 const val TAG = "TestUsuarioDAO"
 
 fun main(args: Array<String>) {
-    val id = 11
+    val id = 18
     Logger.info(TAG, "--- Insert Usuario ---")
     val resultado = UsuarioDAO.insert(
         Usuario(
