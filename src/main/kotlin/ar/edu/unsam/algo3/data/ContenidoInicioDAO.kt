@@ -27,7 +27,6 @@ object ContenidoInicioDAO : EntidadDAO<ContenidoInicio> {
                 "ON re.id_descarga_realizada = d.id_descarga\n" +
                 "GROUP BY c.$ID_CONTENIDO;"
 
-    //    "SELECT $COL_ID_CONTENIDO, $COL_TITULO, $COL_EXTENSION, $COL_FECHA_PUBLICACION, $COL_TIPO_CONTENIDO FROM $DB_TABLE;"
     override val INSERT: String = ""
     override val UPDATE: String = ""
     override val DELETE: String = ""
