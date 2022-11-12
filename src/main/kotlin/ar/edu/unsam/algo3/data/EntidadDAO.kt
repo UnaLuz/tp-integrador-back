@@ -1,5 +1,6 @@
 package ar.edu.unsam.algo3.data
 
+import ar.edu.unsam.algo3.data.ContenidoReporteDAO.mapToEntidad
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 
@@ -18,6 +19,7 @@ interface EntidadDAO<R> {
     val UPDATE: String
     val DELETE: String
     val SELECT_ONE: String
+    val SELECT_WHERE: String
 
     /**
      * Realiza un select de todas las filas de la base de datos.
@@ -26,6 +28,15 @@ interface EntidadDAO<R> {
      */
     fun selectAll(): List<R>? =
         DBConnection.executeQuery(SELECT) { resultSet ->
+            resultSet.mapToList {
+                it.mapToEntidad()
+            }
+        }
+
+    fun selectAll(id: Int): List<R>? =
+        DBConnection.executeQuery(SELECT_WHERE, {
+            it.setInt(1, id)
+        }) { resultSet ->
             resultSet.mapToList {
                 it.mapToEntidad()
             }

@@ -26,6 +26,7 @@ object UsuarioDAO : EntidadDAO<Usuario> {
         "DELETE FROM $DB_TABLE WHERE $COL_ID_USUARIO = ?;"
     override val SELECT_ONE =
         "SELECT $COL_ID_USUARIO, $COL_NOMBRE, $COL_APELLIDO, $COL_PASSWORD, $COL_FECHA_NACIMIENTO FROM $DB_TABLE WHERE $COL_ID_USUARIO = ?;"
+    override val SELECT_WHERE: String = ""
 
     override fun PreparedStatement.setValues(entidad: Usuario){
         setProperties(entidad)

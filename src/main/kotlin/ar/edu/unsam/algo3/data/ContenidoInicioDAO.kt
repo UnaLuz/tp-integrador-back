@@ -31,6 +31,7 @@ object ContenidoInicioDAO : EntidadDAO<ContenidoInicio> {
     override val UPDATE: String = ""
     override val DELETE: String = ""
     override val SELECT_ONE: String = ""
+    override val SELECT_WHERE: String = ""
 
     override fun insert(entidad: ContenidoInicio): Int = DB_ERROR
     override fun update(entidad: ContenidoInicio): Int = DB_ERROR

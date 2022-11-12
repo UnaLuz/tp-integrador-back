@@ -23,7 +23,6 @@ object ContenidoReporteDAO : EntidadDAO<ContenidoReporte> {
                 "ON (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)\n" +
                 "INNER JOIN respuesta_encuesta re\n" +
                 "ON re.id_descarga_realizada = d.id_descarga\n" +
-                "-- WHERE re.id_usuario_responde = 1\n" +
                 "GROUP BY c.id_contenido\n" +
                 "ORDER BY $PUNTAJE_PROM DESC\n" +
                 "LIMIT 5;"
@@ -32,6 +31,17 @@ object ContenidoReporteDAO : EntidadDAO<ContenidoReporte> {
     override val UPDATE: String = ""
     override val DELETE: String = ""
     override val SELECT_ONE: String = ""
+    override val SELECT_WHERE: String =
+        "SELECT c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, avg(re.puntaje) AS $PUNTAJE_PROM\n" +
+                "FROM (contenido c)\n" +
+                "LEFT JOIN (descarga d)\n" +
+                "ON (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)\n" +
+                "INNER JOIN respuesta_encuesta re\n" +
+                "ON re.id_descarga_realizada = d.id_descarga\n" +
+                "WHERE re.id_usuario_responde = ?\n" +
+                "GROUP BY c.id_contenido\n" +
+                "ORDER BY $PUNTAJE_PROM DESC\n" +
+                "LIMIT 5;"
 
     override fun insert(entidad: ContenidoReporte): Int = DB_ERROR
     override fun update(entidad: ContenidoReporte): Int = DB_ERROR
