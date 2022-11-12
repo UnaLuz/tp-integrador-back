@@ -1,14 +1,12 @@
 package ar.edu.unsam.algo3.data
 
-import ar.edu.unsam.algo3.domain.Entidad
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 
-interface EntidadDAO<R : Entidad> {
+interface EntidadDAO<R> {
     companion object {
         // Errores
         const val DB_ERROR = -1
-        const val USER_ERROR = -2
     }
 
     // Table Info
@@ -39,18 +37,14 @@ interface EntidadDAO<R : Entidad> {
         } ?: DB_ERROR
 
     fun update(entidad: R): Int =
-        entidad.id?.let { id ->
-            DBConnection.executeUpdate(UPDATE) {
-                it.setValues(entidad, id)
-            } ?: DB_ERROR
-        } ?: USER_ERROR
+        DBConnection.executeUpdate(UPDATE) {
+            it.setValues(entidad)
+        } ?: DB_ERROR
 
     fun delete(entidad: R): Int =
-        entidad.id?.let { id ->
-            DBConnection.executeUpdate(DELETE) {
-                it.setId(id)
+        DBConnection.executeUpdate(DELETE) {
+                it.setId(entidad)
             } ?: DB_ERROR
-        } ?: USER_ERROR
 
     /**
      * Obtiene la fila con el id de la entidad.
@@ -58,12 +52,10 @@ interface EntidadDAO<R : Entidad> {
      * @return Una entidad o null si ocurrió un error.
      */
     fun selectOne(entidad: R): R? =
-        entidad.id?.let { id ->
-            DBConnection.executeQuery(SELECT_ONE, {
-                it.setId(id)
-            }) { resultSet ->
-                if (resultSet.next()) resultSet.mapToEntidad() else null
-            }
+        DBConnection.executeQuery(SELECT_ONE, {
+            it.setId(entidad)
+        }) { resultSet ->
+            if (resultSet.next()) resultSet.mapToEntidad() else null
         }
 
     /**
@@ -82,14 +74,14 @@ interface EntidadDAO<R : Entidad> {
      *
      * Deben ir en orden.
      */
-    fun PreparedStatement.setValues(entidad: R, id: Int)
+    fun PreparedStatement.setValues(entidad: R)
 
     /**
      * Extension para setear el ID.
      *
      * Se utiliza en operaciones que requieren solo del ID como DELETE y SELECT con WHERE.
      */
-    fun PreparedStatement.setId(id: Int, index: Int = 1)
+    fun PreparedStatement.setId(entidad: R, index: Int = 1)
 
     fun ResultSet.mapToEntidad(): R
 }

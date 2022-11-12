@@ -27,9 +27,9 @@ object UsuarioDAO : EntidadDAO<Usuario> {
     override val SELECT_ONE =
         "SELECT $COL_ID_USUARIO, $COL_NOMBRE, $COL_APELLIDO, $COL_PASSWORD, $COL_FECHA_NACIMIENTO FROM $DB_TABLE WHERE $COL_ID_USUARIO = ?;"
 
-    override fun PreparedStatement.setValues(entidad: Usuario, id: Int){
+    override fun PreparedStatement.setValues(entidad: Usuario){
         setProperties(entidad)
-        setId(id, 5)
+        setId(entidad, 5)
     }
 
     override fun PreparedStatement.setProperties(entidad: Usuario) {
@@ -39,8 +39,8 @@ object UsuarioDAO : EntidadDAO<Usuario> {
         setString(4, entidad.fechaNacimiento.orEmpty())
     }
 
-    override fun PreparedStatement.setId(id: Int, index: Int) {
-        setInt(index, id)
+    override fun PreparedStatement.setId(entidad: Usuario, index: Int) {
+        entidad.id?.let { setInt(index, it) }
     }
 
     override fun ResultSet.mapToEntidad(): Usuario =
