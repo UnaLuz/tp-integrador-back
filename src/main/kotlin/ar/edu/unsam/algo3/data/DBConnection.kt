@@ -12,7 +12,7 @@ object DBConnection {
     private const val DB_PORT = "3306"
     private const val DB_NAME = "tpintegrador"
     private const val DB_USER = "root"
-    private const val DB_PASS = "root"
+    private const val DB_PASS = "Tavi123!"
 
     private const val DB_CONNECTION_URL =
         """jdbc:mysql://%s:%s/%s?useSSL=false&useTimezone=true&serverTimezone=UTC&allowPublicKeyRetrieval=true"""

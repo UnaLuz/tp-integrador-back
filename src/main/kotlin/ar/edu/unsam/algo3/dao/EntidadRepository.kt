@@ -1,9 +1,11 @@
-package ar.edu.unsam.algo3.data
+package ar.edu.unsam.algo3.dao
 
+import ar.edu.unsam.algo3.data.DBConnection
+import ar.edu.unsam.algo3.data.mapToList
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 
-class EntidadDAO<R> {
+public interface EntidadRepository<R> {
     companion object {
         // Errores
         const val DB_ERROR = -1

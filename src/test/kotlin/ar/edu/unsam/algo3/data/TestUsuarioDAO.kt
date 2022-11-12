@@ -7,7 +7,7 @@ const val TAG = "TestUsuarioDAO"
 
 fun main(args: Array<String>) {
     val id = 2
-    val usuarioDAO = UsuarioDAO()
+    val usuarioDAO = UsuarioRepository()
 
     Logger.info(TAG, "--- Usuario con id=$id ---")
     Logger.info(TAG, usuarioDAO.selectOne(Usuario(id = id)).toString())

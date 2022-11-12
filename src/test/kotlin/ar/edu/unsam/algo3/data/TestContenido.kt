@@ -1,10 +1,11 @@
 package ar.edu.unsam.algo3.data
 
+import ContenidoRepository
 import ar.edu.unsam.algo3.utils.Logger
 
 fun main() {
 
-    val contenidoDAO = ContenidoDAO()
+    val contenidoDAO = ContenidoRepository()
     val id = 1
 
     Logger.info(TAG, "--- Select Contenido de inicio ---")

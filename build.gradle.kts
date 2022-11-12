@@ -31,6 +31,8 @@ dependencies {
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat:$springBootVersion")
     //runtimeOnly("com.mysql:mysql-connector-j")
     implementation("mysql:mysql-connector-java:8.0.30")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-data-rest")
 
     // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
