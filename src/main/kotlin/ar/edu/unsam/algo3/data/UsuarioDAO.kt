@@ -1,56 +1,43 @@
 package ar.edu.unsam.algo3.data
 
 import ar.edu.unsam.algo3.domain.Usuario
-import java.sql.PreparedStatement
 import java.sql.ResultSet
 
-object UsuarioDAO : EntidadDAO<Usuario> {
-    private val TAG = this::class.simpleName.toString()
-
-    // Table info
-    override val DB_TABLE = "usuario"
-    const val COL_ID_USUARIO = "id_usuario"
-    const val COL_NOMBRE = "nombre"
-    const val COL_APELLIDO = "apellido"
-    const val COL_PASSWORD = "password"
-    const val COL_FECHA_NACIMIENTO = "fecha_nacimiento"
+class UsuarioDAO(
+    val entidadDAO: EntidadDAO<Usuario> = EntidadDAO()
+) {
+    companion object {
+        // Table info
+        const val DB_TABLE = "usuario"
+        const val COL_ID_USUARIO = "id_usuario"
+        const val COL_NOMBRE = "nombre"
+        const val COL_APELLIDO = "apellido"
+        const val COL_PASSWORD = "password"
+        const val COL_FECHA_NACIMIENTO = "fecha_nacimiento"
+    }
 
     // Queries
-    override val SELECT =
+    private val SELECT =
         "SELECT $COL_ID_USUARIO, $COL_NOMBRE, $COL_APELLIDO, $COL_PASSWORD, $COL_FECHA_NACIMIENTO FROM $DB_TABLE;"
-    override val INSERT =
-        "INSERT INTO $DB_TABLE($COL_NOMBRE, $COL_APELLIDO, $COL_PASSWORD, $COL_FECHA_NACIMIENTO) VALUES(?, ?, ?, ?);"
-    override val UPDATE =
-        "UPDATE $DB_TABLE SET $COL_NOMBRE = ?, $COL_APELLIDO = ?, $COL_PASSWORD = ?, $COL_FECHA_NACIMIENTO = ? WHERE $COL_ID_USUARIO = ?;"
-    override val DELETE =
-        "DELETE FROM $DB_TABLE WHERE $COL_ID_USUARIO = ?;"
-    override val SELECT_ONE =
+
+    private val SELECT_ONE =
         "SELECT $COL_ID_USUARIO, $COL_NOMBRE, $COL_APELLIDO, $COL_PASSWORD, $COL_FECHA_NACIMIENTO FROM $DB_TABLE WHERE $COL_ID_USUARIO = ?;"
-    override val SELECT_WHERE: String = ""
 
-    override fun PreparedStatement.setValues(entidad: Usuario){
-        setProperties(entidad)
-        setId(entidad, 5)
-    }
+    fun selectAll(): List<Usuario>? =
+        entidadDAO.selectAll(SELECT) { it.mapToUsuario() }
 
-    override fun PreparedStatement.setProperties(entidad: Usuario) {
-        setString(1, entidad.nombre.orEmpty())
-        setString(2, entidad.apellido.orEmpty())
-        setString(3, entidad.password.orEmpty())
-        setString(4, entidad.fechaNacimiento.orEmpty())
-    }
+    fun selectOne(usuario: Usuario): Usuario? =
+        entidadDAO.selectOne(SELECT_ONE, { stmt ->
+            usuario.id?.let { stmt.setInt(1, it) }
+        }) { it.mapToUsuario() }
 
-    override fun PreparedStatement.setId(entidad: Usuario, index: Int) {
-        entidad.id?.let { setInt(index, it) }
-    }
-
-    override fun ResultSet.mapToEntidad(): Usuario =
-        Usuario(
-            id = getInt(COL_ID_USUARIO),
-            nombre = getString(COL_NOMBRE),
-            apellido = getString(COL_APELLIDO),
-            password = getString(COL_PASSWORD),
-            fechaNacimiento = getString(COL_FECHA_NACIMIENTO)
-        )
 }
 
+fun ResultSet.mapToUsuario(): Usuario =
+    Usuario(
+        id = getInt(UsuarioDAO.COL_ID_USUARIO),
+        nombre = getString(UsuarioDAO.COL_NOMBRE),
+        apellido = getString(UsuarioDAO.COL_APELLIDO),
+        password = getString(UsuarioDAO.COL_PASSWORD),
+        fechaNacimiento = getString(UsuarioDAO.COL_FECHA_NACIMIENTO)
+    )

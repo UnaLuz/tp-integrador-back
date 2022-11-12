@@ -1,98 +1,46 @@
 package ar.edu.unsam.algo3.data
 
-import ar.edu.unsam.algo3.data.ContenidoReporteDAO.mapToEntidad
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 
-interface EntidadDAO<R> {
+class EntidadDAO<R> {
     companion object {
         // Errores
         const val DB_ERROR = -1
     }
 
-    // Table Info
-    val DB_TABLE: String
-
-    // Queries
-    val SELECT: String
-    val INSERT: String
-    val UPDATE: String
-    val DELETE: String
-    val SELECT_ONE: String
-    val SELECT_WHERE: String
-
     /**
-     * Realiza un select de todas las filas de la base de datos.
+     * Realiza un select de todas las filas de la tabla.
      *
-     * @return Una lista de entidades o null si ocurrió un error.
+     * @return Una lista de [R] o null si ocurrió un error.
      */
-    fun selectAll(): List<R>? =
-        DBConnection.executeQuery(SELECT) { resultSet ->
-            resultSet.mapToList {
-                it.mapToEntidad()
-            }
-        }
-
-    fun selectAll(id: Int): List<R>? =
-        DBConnection.executeQuery(SELECT_WHERE, {
-            it.setInt(1, id)
-        }) { resultSet ->
-            resultSet.mapToList {
-                it.mapToEntidad()
-            }
-        }
-
-    fun insert(entidad: R): Int =
-        DBConnection.executeUpdate(INSERT) {
-            it.setProperties(entidad)
-        } ?: DB_ERROR
-
-    fun update(entidad: R): Int =
-        DBConnection.executeUpdate(UPDATE) {
-            it.setValues(entidad)
-        } ?: DB_ERROR
-
-    fun delete(entidad: R): Int =
-        DBConnection.executeUpdate(DELETE) {
-                it.setId(entidad)
-            } ?: DB_ERROR
-
-    /**
-     * Obtiene la fila con el id de la entidad.
-     *
-     * @return Una entidad o null si ocurrió un error.
-     */
-    fun selectOne(entidad: R): R? =
-        DBConnection.executeQuery(SELECT_ONE, {
-            it.setId(entidad)
-        }) { resultSet ->
-            if (resultSet.next()) resultSet.mapToEntidad() else null
+    fun selectAll(
+        query: String,
+        prepareStatement: ((PreparedStatement) -> Unit)? = null,
+        mapBlock: (ResultSet) -> R
+    ): List<R>? =
+        DBConnection.executeQuery(query, prepareStatement) { resultSet ->
+            resultSet.mapToList(mapBlock)
         }
 
     /**
-     * Extension para setear todas las properties de la entidad menos el id.
-     *
-     * Se utiliza en operaciones que requieren casi todos los campos como INSERT.
-     *
-     * Deben ir en orden.
+     * Realiza operaciones de modificacion de datos como INSERT, UPDATE o DELETE
      */
-    fun PreparedStatement.setProperties(entidad: R)
+    fun executeUpdate(query: String, prepareStatement: (PreparedStatement) -> Unit): Int =
+        DBConnection.executeUpdate(query, prepareStatement) ?: DB_ERROR
 
     /**
-     * Extension para setear todas las properties de la entidad incluyendo el id.
+     * Obtiene la fila con el id especificado.
      *
-     * Se utiliza en operaciones que requieren de todos los campos como UPDATE.
-     *
-     * Deben ir en orden.
+     * @return [R] o null si ocurrió un error.
      */
-    fun PreparedStatement.setValues(entidad: R)
+    fun selectOne(
+        query: String,
+        prepareStatement: ((PreparedStatement) -> Unit)? = null,
+        mapBlock: (ResultSet) -> R,
+    ): R? =
+        DBConnection.executeQuery(query, prepareStatement) { resultSet ->
+            if (resultSet.next()) mapBlock(resultSet) else null
+        }
 
-    /**
-     * Extension para setear el ID.
-     *
-     * Se utiliza en operaciones que requieren solo del ID como DELETE y SELECT con WHERE.
-     */
-    fun PreparedStatement.setId(entidad: R, index: Int = 1)
-
-    fun ResultSet.mapToEntidad(): R
 }
