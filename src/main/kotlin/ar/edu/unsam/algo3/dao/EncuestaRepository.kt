@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository
 import java.sql.ResultSet
 
 @Repository
-class EncuestaRepository() : EntidadRepository<Encuesta>{
+class EncuestaRepository() : EntidadRepository<Encuesta> {
     companion object {
         // Table info
         const val DB_TABLE = "respuesta_encuesta"
@@ -28,7 +28,7 @@ class EncuestaRepository() : EntidadRepository<Encuesta>{
         "SELECT $COL_ID_Encuesta, $COL_RESUMENPOS, $COL_RESUMENNEG, $COL_PUNTAJE FROM $DB_TABLE WHERE $COL_ID_Encuesta = ?;"
 
     private val INSERT =
-        "INSERT INTO $DB_TABLE VALUES (?, ?, ?, ?, ?);"
+        "INSERT INTO $DB_TABLE ($COL_RESUMENPOS, $COL_RESUMENNEG, $COL_PUNTAJE, $COL_DESCARGA, $COL_USUARIO) VALUES (?, ?, ?, ?, ?);"
 
     fun selectAll(): List<Encuesta>? =
         selectAll(SELECT) { it.mapToEncuesta() }
