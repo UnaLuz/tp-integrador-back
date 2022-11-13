@@ -22,13 +22,22 @@ class EncuestaRepository() : EntidadRepository<Encuesta> {
 
     // Queries
     private val SELECT =
-        "SELECT $COL_ID_Encuesta, $COL_RESUMENPOS, $COL_RESUMENNEG, $COL_PUNTAJE FROM $DB_TABLE;"
+        """SELECT $COL_ID_Encuesta, $COL_RESUMENPOS, $COL_RESUMENNEG, $COL_PUNTAJE
+        FROM $DB_TABLE;"""
 
     private val SELECT_ONE =
-        "SELECT $COL_ID_Encuesta, $COL_RESUMENPOS, $COL_RESUMENNEG, $COL_PUNTAJE FROM $DB_TABLE WHERE $COL_ID_Encuesta = ?;"
+        """SELECT $COL_ID_Encuesta, $COL_RESUMENPOS, $COL_RESUMENNEG, $COL_PUNTAJE
+        FROM $DB_TABLE
+        WHERE $COL_ID_Encuesta = ?;"""
 
     private val INSERT =
-        "INSERT INTO $DB_TABLE ($COL_RESUMENPOS, $COL_RESUMENNEG, $COL_PUNTAJE, $COL_DESCARGA, $COL_USUARIO) VALUES (?, ?, ?, ?, ?);"
+        """INSERT INTO $DB_TABLE ($COL_RESUMENPOS, $COL_RESUMENNEG, $COL_PUNTAJE, $COL_DESCARGA, $COL_USUARIO)
+        VALUES (?, ?, ?, ?, ?);"""
+
+    private val UPDATE =
+        """UPDATE $DB_TABLE
+        SET $COL_RESUMENPOS = ?, $COL_RESUMENNEG = ?, $COL_PUNTAJE = ?
+        WHERE $COL_ID_Encuesta = ?;"""
 
     fun selectAll(): List<Encuesta>? =
         selectAll(SELECT) { it.mapToEncuesta() }
@@ -57,6 +66,18 @@ class EncuestaRepository() : EntidadRepository<Encuesta> {
                 }
             } ?: ERROR
         } ?: ERROR
+
+
+    fun update(encuesta: Encuesta) =
+        encuesta.id?.let { id ->
+            executeUpdate(UPDATE) {
+                it.setString(1, encuesta.resumenPositivo)
+                it.setString(2, encuesta.resumenNegativo)
+                it.setDouble(3, encuesta.puntaje)
+                it.setInt(4, id)
+            }
+        } ?: ERROR
+
 }
 
 fun ResultSet.mapToEncuesta(): Encuesta =
