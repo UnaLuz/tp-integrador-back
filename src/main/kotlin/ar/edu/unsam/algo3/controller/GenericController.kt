@@ -1,7 +1,6 @@
 package ar.edu.unsam.algo3.controller
 
 import ar.edu.unsam.algo3.domain.Encuesta
-import ar.edu.unsam.algo3.domain.Usuario
 import ar.edu.unsam.algo3.service.ContenidoService
 import ar.edu.unsam.algo3.service.EncuestaService
 import io.swagger.v3.oas.annotations.Operation
@@ -34,7 +33,7 @@ class GenericController {
     fun getEncuestaByUsuarioAndContenido(
         @RequestParam idUsuario: Int,
         @RequestParam idContenido: Int
-    ) = EncuestaService.getEncuestaByIdUsuarioAndIdContenido(idUsuario, idContenido)
+    ) = EncuestaService.getEncuestaByUsuarioAndContenido(idUsuario, idContenido)
 
     @PostMapping("/createEncuesta")
     @Operation(summary = "Crea una nuevo Encuesta")
@@ -50,10 +49,6 @@ class GenericController {
     @DeleteMapping("/deleteEncuesta/{id}")
     @Operation(summary = "Eliminar una encuesta")
     fun deleteEncuestaById(@PathVariable id: Int) = EncuestaService.deleteEncuestaById(id)
-
-    @GetMapping("/editEncuesta/{userId}/contenido/{contenidoId}")
-    fun editEncuesta(@PathVariable userId: Int, @PathVariable contenidoId: Int) =
-        EncuestaService.editEncuesta(userId, contenidoId)
 
     /*  @PostMapping("/createDescarga")
       @Operation(summary = "generar descarga de contenido")

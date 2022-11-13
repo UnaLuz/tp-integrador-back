@@ -14,7 +14,6 @@ class EncuestaService {
     fun deleteEncuestaById(idEncuesta: Int) {
     }
 
-    fun editEncuesta(userId: Int, contenidoId: Int) {}
     fun updateEncuesta(encuesta: Encuesta) = EncuestaRepository.update(encuesta)
     fun create(encuesta: Encuesta): Int {
         val result = EncuestaRepository.insert(encuesta)
@@ -33,6 +32,6 @@ class EncuestaService {
         return encuestas
     }
 
-    fun getEncuestaByIdUsuarioAndIdContenido(idUsuario: Int, idContenido: Int): Encuesta? =
+    fun getEncuestaByUsuarioAndContenido(idUsuario: Int, idContenido: Int): Encuesta? =
         EncuestaRepository.selectOne(idUsuario = idUsuario, idContenido = idContenido)
 }
