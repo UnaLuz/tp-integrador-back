@@ -29,10 +29,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.springdoc:springdoc-openapi-ui:1.6.11")
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat:$springBootVersion")
-    //runtimeOnly("com.mysql:mysql-connector-j")
     implementation("mysql:mysql-connector-java:8.0.30")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-data-rest")
 
     // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
