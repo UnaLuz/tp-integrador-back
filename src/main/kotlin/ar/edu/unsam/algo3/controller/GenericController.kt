@@ -27,7 +27,7 @@ class GenericController {
     fun getEncuestasPrueba() = EncuestaService.getEncuestasPrueba()
     @PostMapping("/createEncuesta")
     @Operation(summary = "Crea una nuevo Encuesta")
-    fun createEncuesta(@RequestBody EncuestaBody : Encuesta) {
+    fun createEncuesta(@RequestBody EncuestaBody : Encuesta): Int {
         return EncuestaService.create(EncuestaBody)
     }
 
