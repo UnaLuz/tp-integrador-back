@@ -5,7 +5,7 @@ import ar.edu.unsam.algo3.data.mapToList
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 
-public interface EntidadRepository<R> {
+interface EntidadRepository<R> {
     companion object {
         // Errores
         const val DB_ERROR = -1

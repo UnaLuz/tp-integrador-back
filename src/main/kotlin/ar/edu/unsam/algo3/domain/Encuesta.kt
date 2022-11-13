@@ -5,4 +5,6 @@ data class Encuesta(
     val resumenPositivo: String,
     val resumenNegativo: String,
     val puntaje: Double,
+    val idDescarga: Int?,
+    val idUsuario: Int?,
 )
