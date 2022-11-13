@@ -15,7 +15,7 @@ class EncuestaService {
     }
 
     fun editEncuesta(userId: Int, contenidoId: Int) {}
-    fun updateEncuesta(encuesta: Encuesta) {}
+    fun updateEncuesta(encuesta: Encuesta) = EncuestaRepository.update(encuesta)
     fun create(encuesta: Encuesta): Int {
         val result = EncuestaRepository.insert(encuesta)
         if (result < 1)
