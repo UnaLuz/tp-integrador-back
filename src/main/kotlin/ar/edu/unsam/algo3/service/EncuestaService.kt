@@ -32,4 +32,7 @@ class EncuestaService {
         val encuestas = EncuestaRepository.selectAll()
         return encuestas
     }
+
+    fun getEncuestaByIdUsuarioAndIdContenido(idUsuario: Int, idContenido: Int): Encuesta? =
+        EncuestaRepository.selectOne(idUsuario = idUsuario, idContenido = idContenido)
 }
