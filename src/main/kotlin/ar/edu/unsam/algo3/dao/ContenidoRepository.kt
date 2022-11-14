@@ -1,9 +1,13 @@
-import ar.edu.unsam.algo3.dao.EntidadRepository
+package ar.edu.unsam.algo3.dao
+
+import ar.edu.unsam.algo3.ReporteOrderBy
 import ar.edu.unsam.algo3.domain.Contenido
 import org.springframework.stereotype.Repository
+import java.sql.PreparedStatement
 import java.sql.ResultSet
+
 @Repository
-class ContenidoRepository () : EntidadRepository<Contenido> {
+class ContenidoRepository() : EntidadRepository<Contenido> {
 
     companion object {
         // DB info
@@ -15,39 +19,85 @@ class ContenidoRepository () : EntidadRepository<Contenido> {
         const val PUNTAJE_PROM = "puntaje_prom"
     }
 
-    fun getAllContenidos() {}
-    fun getReporteContenidos() {}
-
-    fun createDescarga() {}
-
     // Queries
     val SELECT_INICIO =
-        "SELECT c.$ID_CONTENIDO, c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, max(re.puntaje) AS $PUNTAJE_MAX, avg(re.puntaje) AS $PUNTAJE_PROM\n" +
-                "FROM ($DB_TABLE c)\n" +
-                "LEFT JOIN (descarga d)\n" +
-                "ON (d.id_contenido_documento = c.$ID_CONTENIDO OR d.id_contenido_musica = c.$ID_CONTENIDO)\n" +
-                "LEFT JOIN respuesta_encuesta re\n" + "ON re.id_descarga_realizada = d.id_descarga\n" +
-                "GROUP BY c.$ID_CONTENIDO;"
+        """SELECT c.$ID_CONTENIDO, c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, max(re.puntaje) AS $PUNTAJE_MAX, avg(re.puntaje) AS $PUNTAJE_PROM
+        FROM ($DB_TABLE c)
+        LEFT JOIN (descarga d)
+        ON (d.id_contenido_documento = c.$ID_CONTENIDO OR d.id_contenido_musica = c.$ID_CONTENIDO)
+        LEFT JOIN respuesta_encuesta re
+        ON re.id_descarga_realizada = d.id_descarga
+        GROUP BY c.$ID_CONTENIDO;"""
 
     val SELECT_REPORTE: String =
-        "SELECT c.${TITULO}, avg(d.velocidad) AS ${VELOCIDAD_PROM}, avg(re.puntaje) AS ${PUNTAJE_PROM}\n" + "FROM (contenido c)\n" + "LEFT JOIN (descarga d)\n" + "ON (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)\n" + "INNER JOIN respuesta_encuesta re\n" + "ON re.id_descarga_realizada = d.id_descarga\n" + "GROUP BY c.id_contenido\n" + "ORDER BY ${PUNTAJE_PROM} DESC\n" + "LIMIT 5;"
+        """SELECT c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, avg(re.puntaje) AS $PUNTAJE_PROM
+        FROM (contenido c)
+        LEFT JOIN (descarga d)
+        ON (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)
+        INNER JOIN respuesta_encuesta re
+        ON re.id_descarga_realizada = d.id_descarga
+        GROUP BY c.id_contenido
+        ORDER BY %s DESC
+        LIMIT 5;"""
 
     val SELECT_REPORTE_WHERE: String =
-        "SELECT c.${TITULO}, avg(d.velocidad) AS ${VELOCIDAD_PROM}, avg(re.puntaje) AS ${PUNTAJE_PROM}\n" + "FROM (contenido c)\n" + "LEFT JOIN (descarga d)\n" + "ON (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)\n" + "INNER JOIN respuesta_encuesta re\n" + "ON re.id_descarga_realizada = d.id_descarga\n" + "WHERE re.id_usuario_responde = ?\n" + "GROUP BY c.id_contenido\n" + "ORDER BY ${PUNTAJE_PROM} DESC\n" + "LIMIT 5;"
+        """SELECT c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, avg(re.puntaje) AS $PUNTAJE_PROM
+        FROM (contenido c)
+        LEFT JOIN (descarga d)
+        ON (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)
+        INNER JOIN respuesta_encuesta re
+        ON re.id_descarga_realizada = d.id_descarga
+        WHERE re.id_usuario_responde = ?
+        GROUP BY c.id_contenido
+        ORDER BY %s DESC
+        LIMIT 5;"""
 
-    fun selectInicio(): List<Contenido>? =
+    /**
+     * Busca la lista de contenidos con los datos necesarios
+     *  para el inicio:
+     *  ```
+     *  [
+     *   {
+     *   "id": 1,
+     *   "titulo": "Mcfly Ca7riel",
+     *   "velocidadPromedio": 4.0,
+     *   "puntajeMax": 5.0,
+     *   "puntajePromedio": 3.0
+     *   }
+     *  ]
+     *  ```
+     *
+     * @return Una lista de contenidos o NULL si ocurrió un error
+     */
+    fun getAllContenidos(): List<Contenido>? =
         selectAll(SELECT_INICIO) { resultSet -> resultSet.mapToContenidoInicio() }
 
     /**
      * Devuelve la lista para el reporte
      *
-     * Si [id] no es nulo, entonces se obtienen los contenidos de el usuario con ese id
+     * Si [idUsuario] no es nulo, entonces se obtienen los contenidos de el usuario con ese id
      */
-    fun selectReporte(id: Int? = null): List<Contenido>? = id?.let { idNotNull ->
-        selectAll(SELECT_REPORTE_WHERE, { statement ->
-            statement.setInt(1, idNotNull)
-        }) { resultSet -> resultSet.mapToContenidoReporte() }
-    } ?: selectAll(SELECT_REPORTE) { resultSet -> resultSet.mapToContenidoReporte() }
+    fun getReporteContenidos(idUsuario: Int?, orderBy: ReporteOrderBy): List<Contenido>? =
+        selectAll(
+            query = getReporteQuery(idUsuario, orderBy),
+            prepareStatement = getPreparedStatement(idUsuario)
+        ) { resultSet -> resultSet.mapToContenidoReporte() }
+
+    private fun getReporteQuery(id: Int?, orderBy: ReporteOrderBy) =
+        when (id) {
+            null -> SELECT_REPORTE
+            else -> SELECT_REPORTE_WHERE
+        }.format(orderBy.colName)
+
+    private fun getPreparedStatement(id: Int?) = id?.let { value ->
+        { statement: PreparedStatement ->
+            statement.setInt(1, value)
+        }
+    }
+
+    fun createDescarga() {
+
+    }
 
 }
 
