@@ -4,6 +4,7 @@ import ar.edu.unsam.algo3.ReporteOrderBy
 import ar.edu.unsam.algo3.domain.Descarga
 import ar.edu.unsam.algo3.domain.Encuesta
 import ar.edu.unsam.algo3.service.ContenidoService
+import ar.edu.unsam.algo3.service.DescargaService
 import ar.edu.unsam.algo3.service.EncuestaService
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,6 +18,9 @@ class GenericController {
 
     @Autowired
     lateinit var EncuestaService: EncuestaService
+
+    @Autowired
+    lateinit var descargaService: DescargaService
 
     // Contenido endpoints
 
@@ -62,7 +66,7 @@ class GenericController {
 
     @PostMapping("/createDescarga")
     @Operation(summary = "generar descarga de contenido")
-    fun createDescarga(@RequestBody descarga: Descarga): Int = ContenidoService.createDescarga()
+    fun createDescarga(@RequestBody descarga: Descarga): Int = descargaService.createDescarga(descarga)
 
     /* @RequestMapping("/editEncuesta", params = ["userId","contenidoId"])
      //@GetMapping("/usuario/{user}")

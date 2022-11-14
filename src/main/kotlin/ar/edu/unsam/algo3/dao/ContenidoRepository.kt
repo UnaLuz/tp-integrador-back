@@ -95,10 +95,6 @@ class ContenidoRepository() : EntidadRepository<Contenido> {
         }
     }
 
-    fun createDescarga() {
-
-    }
-
 }
 
 fun ResultSet.mapToContenidoInicio() = Contenido(

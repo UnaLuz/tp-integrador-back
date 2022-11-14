@@ -18,6 +18,4 @@ class ContenidoService {
         orderBy: ReporteOrderBy?
     ) = ContenidoRepository.getReporteContenidos(idUsuario, orderBy ?: ReporteOrderBy.PUNTAJE)
 
-    fun createDescarga() = ContenidoRepository.createDescarga()
-
 }
