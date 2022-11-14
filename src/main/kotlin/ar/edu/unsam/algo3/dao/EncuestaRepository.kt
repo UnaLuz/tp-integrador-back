@@ -45,6 +45,8 @@ class EncuestaRepository() : EntidadRepository<Encuesta> {
         SET $COL_RESUMENPOS = ?, $COL_RESUMENNEG = ?, $COL_PUNTAJE = ?
         WHERE $COL_ID_Encuesta = ?;"""
 
+    private val DELETE = "DELETE FROM $DB_TABLE WHERE $COL_ID_Encuesta = ?;"
+
     fun selectAll(): List<Encuesta>? =
         selectAll(SELECT) { it.mapToEncuesta() }
 
@@ -93,6 +95,11 @@ class EncuestaRepository() : EntidadRepository<Encuesta> {
                 it.setInt(4, id)
             }
         } ?: ERROR
+
+    fun deleteEncuestaById(idEncuesta: Int): Int =
+        executeUpdate(DELETE) {
+            it.setInt(1, idEncuesta)
+        }
 
 }
 

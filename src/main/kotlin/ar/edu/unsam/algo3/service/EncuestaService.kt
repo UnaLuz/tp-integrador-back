@@ -11,8 +11,8 @@ class EncuestaService {
     @Autowired
     lateinit var EncuestaRepository: EncuestaRepository
 
-    fun deleteEncuestaById(idEncuesta: Int) {
-    }
+    fun deleteEncuestaById(idEncuesta: Int) =
+        EncuestaRepository.deleteEncuestaById(idEncuesta)
 
     fun updateEncuesta(encuesta: Encuesta) = EncuestaRepository.update(encuesta)
     fun create(encuesta: Encuesta): Int {

@@ -1,6 +1,7 @@
 package ar.edu.unsam.algo3.controller
 
 import ar.edu.unsam.algo3.ReporteOrderBy
+import ar.edu.unsam.algo3.domain.Descarga
 import ar.edu.unsam.algo3.domain.Encuesta
 import ar.edu.unsam.algo3.service.ContenidoService
 import ar.edu.unsam.algo3.service.EncuestaService
@@ -59,10 +60,9 @@ class GenericController {
     @Operation(summary = "Eliminar una encuesta")
     fun deleteEncuestaById(@PathVariable id: Int) = EncuestaService.deleteEncuestaById(id)
 
-    /*  @PostMapping("/createDescarga")
-      @Operation(summary = "generar descarga de contenido")
-      fun createDescarga() = ContenidoService.createDescarga()
-  */
+    @PostMapping("/createDescarga")
+    @Operation(summary = "generar descarga de contenido")
+    fun createDescarga(@RequestBody descarga: Descarga): Int = ContenidoService.createDescarga()
 
     /* @RequestMapping("/editEncuesta", params = ["userId","contenidoId"])
      //@GetMapping("/usuario/{user}")
