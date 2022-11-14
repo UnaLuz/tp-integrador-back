@@ -65,7 +65,7 @@ class GenericController {
     fun deleteEncuestaById(@PathVariable id: Int) = EncuestaService.deleteEncuestaById(id)
 
     @PostMapping("/createDescarga")
-    @Operation(summary = "generar descarga de contenido")
+    @Operation(summary = "generar descarga de contenido y devuelve el ID de la descarga generada")
     fun createDescarga(@RequestBody descarga: Descarga): Int = descargaService.createDescarga(descarga)
 
     /* @RequestMapping("/editEncuesta", params = ["userId","contenidoId"])
