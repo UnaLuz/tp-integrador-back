@@ -31,7 +31,7 @@ class EncuestaRepository() : EntidadRepository<Encuesta> {
         INNER JOIN descarga d
         ON (d.id_contenido_documento = ? OR d.id_contenido_musica = ?)
         INNER JOIN $DB_TABLE re
-        ON re.$COL_ID_Encuesta = d.id_descarga
+        ON re.$COL_DESCARGA = d.id_descarga
         WHERE re.$COL_USUARIO = ? AND c.id_contenido = ?
         ORDER BY re.$COL_ID_Encuesta DESC
         LIMIT 1;"""
