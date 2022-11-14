@@ -2,6 +2,7 @@ package ar.edu.unsam.algo3.dao
 
 import ar.edu.unsam.algo3.data.DBConnection
 import ar.edu.unsam.algo3.data.mapToList
+import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 
@@ -45,4 +46,18 @@ interface EntidadRepository<R> {
             if (resultSet.next()) mapBlock(resultSet) else null
         }
 
+    fun executeTransaction(
+        updateSql: String,
+        querySql: String,
+        setValuesBlock: (PreparedStatement) -> Unit,
+        mapBlock: (ResultSet) -> R,
+    ): R? = DBConnection.executeTransaction(updateSql, querySql, setValuesBlock, mapBlock)
+
 }
+
+data class Operacion<T>(
+    val query: String,
+    val execute: (PreparedStatement) -> Any,
+    val prepareStatement: ((PreparedStatement) -> Unit)?,
+    val mapBlock: ((ResultSet) -> T)?
+)

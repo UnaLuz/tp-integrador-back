@@ -12,7 +12,7 @@ object DBConnection {
     private const val DB_PORT = "3306"
     private const val DB_NAME = "tpintegrador"
     private const val DB_USER = "root"
-    private const val DB_PASS = "Tavi123!"
+    private const val DB_PASS = "root"
 
     private const val DB_CONNECTION_URL =
         """jdbc:mysql://%s:%s/%s?useSSL=false&useTimezone=true&serverTimezone=UTC&allowPublicKeyRetrieval=true"""
@@ -55,6 +55,40 @@ object DBConnection {
             Logger.error(tag = TAG, message = "Fallo al iniciar conexion con mysql", exception = sqlException)
             null
         }
+    }
+
+    fun <R>executeTransaction(
+        updateSql: String,
+        querySql: String,
+        setValuesBlock: (PreparedStatement) -> Unit,
+        mapBlock: (ResultSet) -> R,
+    ): R? {
+        val conn = getNewConnection()
+        var value: R? = null
+        conn?.use { connection ->
+            connection.autoCommit = false
+            connection.executeTransactionUpdate(updateSql, setValuesBlock)
+            value = connection.executeTransactionQuery(querySql, mapBlock)
+            connection.commit()
+        }
+        return value
+    }
+
+    private fun Connection.executeTransactionUpdate(update: String, setValuesBlock: (PreparedStatement) -> Unit) {
+        this.prepareStatement(update)
+            .use { stmt ->
+                setValuesBlock(stmt)
+                stmt.executeUpdate()
+            }
+    }
+
+    private fun <R>Connection.executeTransactionQuery(query: String, mapBlock: (ResultSet) -> R): R? {
+        return this.prepareStatement(query)
+            .use { stmt ->
+                stmt.executeQuery().use { resultSet ->
+                    if (resultSet.next()) mapBlock(resultSet) else null
+                }
+            }
     }
 
     private fun <T> useConnection(block: (Connection) -> T): T? =
