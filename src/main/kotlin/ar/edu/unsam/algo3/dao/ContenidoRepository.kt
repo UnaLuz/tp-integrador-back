@@ -18,11 +18,12 @@ class ContenidoRepository() : EntidadRepository<Contenido> {
         const val PUNTAJE_MAX = "puntaje_max"
         const val PUNTAJE_PROM = "puntaje_prom"
         const val TIPO_CONTENIDO = "tipo_contenido"
+        const val USUARIO_RESPONDE = "usuario_responde"
     }
 
     // Queries
     val SELECT_INICIO =
-        """SELECT c.$ID_CONTENIDO, c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, max(re.puntaje) AS $PUNTAJE_MAX, avg(re.puntaje) AS $PUNTAJE_PROM, c.$TIPO_CONTENIDO AS $TIPO_CONTENIDO
+        """SELECT c.$ID_CONTENIDO, c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, max(re.puntaje) AS $PUNTAJE_MAX, avg(re.puntaje) AS $PUNTAJE_PROM, c.$TIPO_CONTENIDO AS $TIPO_CONTENIDO, ( CASE WHEN re.id_usuario_responde = 1 THEN true END) AS $USUARIO_RESPONDE
         FROM ($DB_TABLE c)
         LEFT JOIN (descarga d)
         ON (d.id_contenido_documento = c.$ID_CONTENIDO OR d.id_contenido_musica = c.$ID_CONTENIDO)
@@ -105,7 +106,8 @@ fun ResultSet.mapToContenidoInicio() = Contenido(
     velocidadPromedio = getDouble(ContenidoRepository.VELOCIDAD_PROM),
     puntajeMax = getDouble(ContenidoRepository.PUNTAJE_MAX),
     puntajePromedio = getDouble(ContenidoRepository.PUNTAJE_PROM),
-    tipoContenido = getString(ContenidoRepository.TIPO_CONTENIDO)
+    tipoContenido = getString(ContenidoRepository.TIPO_CONTENIDO),
+    usuarioResponde = getBoolean(ContenidoRepository.USUARIO_RESPONDE)
 )
 
 fun ResultSet.mapToContenidoReporte() = Contenido(
@@ -114,5 +116,6 @@ fun ResultSet.mapToContenidoReporte() = Contenido(
     velocidadPromedio = getDouble(ContenidoRepository.VELOCIDAD_PROM),
     puntajeMax = null,
     puntajePromedio = getDouble(ContenidoRepository.PUNTAJE_PROM),
-    tipoContenido = getString(ContenidoRepository.TIPO_CONTENIDO)
+    tipoContenido = getString(ContenidoRepository.TIPO_CONTENIDO),
+    usuarioResponde = getBoolean(ContenidoRepository.USUARIO_RESPONDE)
 )

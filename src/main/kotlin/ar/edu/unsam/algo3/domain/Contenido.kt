@@ -7,5 +7,6 @@ data class Contenido(
     val velocidadPromedio: Double?,
     val puntajeMax: Double?,
     val puntajePromedio: Double?,
-    val tipoContenido: String
+    val tipoContenido: String,
+    val usuarioResponde: Boolean
 )
