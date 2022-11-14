@@ -17,16 +17,18 @@ class ContenidoRepository() : EntidadRepository<Contenido> {
         const val VELOCIDAD_PROM = "velocidad_prom"
         const val PUNTAJE_MAX = "puntaje_max"
         const val PUNTAJE_PROM = "puntaje_prom"
+        const val TIPO_CONTENIDO = "tipo_contenido"
     }
 
     // Queries
     val SELECT_INICIO =
-        """SELECT c.$ID_CONTENIDO, c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, max(re.puntaje) AS $PUNTAJE_MAX, avg(re.puntaje) AS $PUNTAJE_PROM
+        """SELECT c.$ID_CONTENIDO, c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, max(re.puntaje) AS $PUNTAJE_MAX, avg(re.puntaje) AS $PUNTAJE_PROM, c.$TIPO_CONTENIDO AS $TIPO_CONTENIDO
         FROM ($DB_TABLE c)
         LEFT JOIN (descarga d)
         ON (d.id_contenido_documento = c.$ID_CONTENIDO OR d.id_contenido_musica = c.$ID_CONTENIDO)
         LEFT JOIN respuesta_encuesta re
         ON re.id_descarga_realizada = d.id_descarga
+        WHERE c.tipo_contenido LIKE 'musica' OR c.tipo_contenido LIKE 'documento' 
         GROUP BY c.$ID_CONTENIDO;"""
 
     val SELECT_REPORTE: String =
@@ -102,7 +104,8 @@ fun ResultSet.mapToContenidoInicio() = Contenido(
     titulo = getString(ContenidoRepository.TITULO),
     velocidadPromedio = getDouble(ContenidoRepository.VELOCIDAD_PROM),
     puntajeMax = getDouble(ContenidoRepository.PUNTAJE_MAX),
-    puntajePromedio = getDouble(ContenidoRepository.PUNTAJE_PROM)
+    puntajePromedio = getDouble(ContenidoRepository.PUNTAJE_PROM),
+    tipoContenido = getString(ContenidoRepository.TIPO_CONTENIDO)
 )
 
 fun ResultSet.mapToContenidoReporte() = Contenido(
@@ -110,5 +113,6 @@ fun ResultSet.mapToContenidoReporte() = Contenido(
     titulo = getString(ContenidoRepository.TITULO),
     velocidadPromedio = getDouble(ContenidoRepository.VELOCIDAD_PROM),
     puntajeMax = null,
-    puntajePromedio = getDouble(ContenidoRepository.PUNTAJE_PROM)
+    puntajePromedio = getDouble(ContenidoRepository.PUNTAJE_PROM),
+    tipoContenido = getString(ContenidoRepository.TIPO_CONTENIDO)
 )
