@@ -1,5 +1,6 @@
 package ar.edu.unsam.algo3.controller
 
+import ar.edu.unsam.algo3.ReporteOrderBy
 import ar.edu.unsam.algo3.domain.Encuesta
 import ar.edu.unsam.algo3.service.ContenidoService
 import ar.edu.unsam.algo3.service.EncuestaService
@@ -16,14 +17,22 @@ class GenericController {
     @Autowired
     lateinit var EncuestaService: EncuestaService
 
-    /*@GetMapping("")
+    // Contenido endpoints
+
+    @GetMapping("")
     @Operation(summary = "Devuelve todos los contenidos para la página de inicio")
     fun getAllContenidos() = ContenidoService.getAllContenidos()
 
     @GetMapping("/getReporte")
     @Operation(summary = "Devuelve todos los contenidos para el reporte")
-    fun getReporteContenidos() = ContenidoService.getReporteContenidos()
-*/
+    fun getReporteContenidos(
+        @RequestParam idUsuario: Int?,
+        @RequestParam orderBy: ReporteOrderBy?
+    ) = ContenidoService.getReporteContenidos(idUsuario, orderBy)
+
+    // Encuesta endpoints
+
+    //FIXME: Esto era solo una prueba, no utilizar
     @GetMapping("/getEncuestasPrueba")
     @Operation(summary = "Devuelve todos los contenidos para el reporte")
     fun getEncuestasPrueba() = EncuestaService.getEncuestasPrueba()
