@@ -43,7 +43,7 @@ AND (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_c
 GROUP BY c.id_contenido;"""
 
     val SELECT_REPORTE: String =
-        """SELECT c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, avg(re.puntaje) AS $PUNTAJE_PROM
+        """SELECT c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, avg(re.puntaje) AS $PUNTAJE_PROM, c.$TIPO_CONTENIDO
         FROM (contenido c)
         LEFT JOIN (descarga d)
         ON (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)
@@ -54,7 +54,7 @@ GROUP BY c.id_contenido;"""
         LIMIT 5;"""
 
     val SELECT_REPORTE_WHERE: String =
-        """SELECT c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, avg(re.puntaje) AS $PUNTAJE_PROM
+        """SELECT c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, avg(re.puntaje) AS $PUNTAJE_PROM, c.$TIPO_CONTENIDO
         FROM (contenido c)
         LEFT JOIN (descarga d)
         ON (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)
