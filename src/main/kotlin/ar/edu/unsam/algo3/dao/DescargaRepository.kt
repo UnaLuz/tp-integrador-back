@@ -51,16 +51,24 @@ class DescargaRepository : EntidadRepository<Descarga> {
         }) {
             it.mapToDescarga()
         }
-
         return descargaInsert?.id
     }
 }
 
-fun ResultSet.mapToDescarga(): Descarga =
-    Descarga(
-        id = getInt(DescargaRepository.COL_ID_DESCARGA),
-        velocidad = getDouble(DescargaRepository.COL_VELOCIDAD),
-        idUsuario = getInt(DescargaRepository.COL_ID_USUARIO),
-        idContenidoMusica = getInt(DescargaRepository.COL_ID_MUSICA),
-        idContenidoDocumento = getInt(DescargaRepository.COL_ID_DOC)
+fun ResultSet.mapToDescarga(): Descarga {
+    var id: Int? = getInt(DescargaRepository.COL_ID_DESCARGA)
+    if(this.wasNull()) id = null
+    val velocidad = getDouble(DescargaRepository.COL_VELOCIDAD)
+    val idUsuario = getInt(DescargaRepository.COL_ID_USUARIO)
+    var idContenidoMusica: Int? = getInt(DescargaRepository.COL_ID_MUSICA)
+    if(this.wasNull()) idContenidoMusica = null
+    var idContenidoDocumento: Int? = getInt(DescargaRepository.COL_ID_DOC)
+    if(this.wasNull()) idContenidoDocumento = null
+    return Descarga(
+        id = id,
+        velocidad = velocidad,
+        idUsuario = idUsuario,
+        idContenidoMusica = idContenidoMusica,
+        idContenidoDocumento = idContenidoDocumento
     )
+}
