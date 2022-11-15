@@ -26,7 +26,7 @@ class ContenidoRepository() : EntidadRepository<Contenido> {
     val SELECT_INICIO =
         """SELECT c.$ID_CONTENIDO, c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, avg(re.puntaje) AS $PUNTAJE_PROM, $PUNTAJE_MAX, $TIPO_CONTENIDO, t_mejor_puntaje.$USUARIO_RESPONDE, t_mejor_puntaje.$ID_RESPUESTA
 FROM (contenido c)
-LEFT JOIN (respuesta_encuesta re, descarga d)
+INNER JOIN (respuesta_encuesta re, descarga d)
 ON (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)
 AND re.id_descarga_realizada = d.id_descarga
 LEFT JOIN (
