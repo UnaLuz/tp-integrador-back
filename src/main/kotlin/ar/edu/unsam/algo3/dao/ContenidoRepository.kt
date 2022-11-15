@@ -40,6 +40,7 @@ LEFT JOIN (
 ON c.id_contenido = t_mejor_puntaje.id_contenido
 AND re.id_descarga_realizada = d.id_descarga
 AND (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)
+WHERE c.tipo_contenido <> 'video'
 GROUP BY c.id_contenido;"""
 
     val SELECT_REPORTE: String =
