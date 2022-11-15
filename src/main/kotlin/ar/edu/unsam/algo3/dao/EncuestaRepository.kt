@@ -25,6 +25,11 @@ class EncuestaRepository() : EntidadRepository<Encuesta> {
         """SELECT $COL_ID_Encuesta, $COL_RESUMENPOS, $COL_RESUMENNEG, $COL_PUNTAJE
         FROM $DB_TABLE;"""
 
+    private val SELECT_BY_ID =
+        """SELECT $COL_ID_Encuesta, $COL_RESUMENPOS, $COL_RESUMENNEG, $COL_PUNTAJE
+        FROM $DB_TABLE
+        WHERE $DB_TABLE.$COL_ID_Encuesta = ?;"""
+
     private val SELECT_ONE = """
         SELECT re.$COL_ID_Encuesta, re.$COL_RESUMENPOS, re.$COL_RESUMENNEG, re.$COL_PUNTAJE
         FROM contenido c
@@ -63,6 +68,11 @@ class EncuestaRepository() : EntidadRepository<Encuesta> {
             stmt.setInt(2, idContenido)
             stmt.setInt(3, idUsuario)
             stmt.setInt(4, idContenido)
+        }) { it.mapToEncuesta() }
+
+    fun getEncuestaById(idEncuesta: Int): Encuesta? =
+        selectOne(SELECT_BY_ID, { stmt ->
+            stmt.setInt(1, idEncuesta)
         }) { it.mapToEncuesta() }
 
     /**

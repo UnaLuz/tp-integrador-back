@@ -27,9 +27,8 @@ class EncuestaService {
         return result
     }
 
-    fun getEncuestasPrueba(): List<Encuesta>? {
-        val encuestas = EncuestaRepository.selectAll()
-        return encuestas
+    fun getEncuestaById(idEncuesta: Int): Encuesta? {
+        return EncuestaRepository.getEncuestaById(idEncuesta)
     }
 
     fun getEncuestaByUsuarioAndContenido(idUsuario: Int, idContenido: Int): Encuesta? =

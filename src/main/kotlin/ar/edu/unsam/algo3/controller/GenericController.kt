@@ -38,10 +38,11 @@ class GenericController {
 
     // Encuesta endpoints
 
-    //FIXME: Esto era solo una prueba, no utilizar
-    @GetMapping("/getEncuestasPrueba")
-    @Operation(summary = "Devuelve todos los contenidos para el reporte")
-    fun getEncuestasPrueba() = EncuestaService.getEncuestasPrueba()
+    @GetMapping("/getEncuestaById")
+    @Operation(summary = "Devuelve la encuesta que corresponde al id recibido")
+    fun getEncuestaById(
+        @RequestParam idEncuesta: Int
+    ) = EncuestaService.getEncuestaById(idEncuesta)
 
     @GetMapping("/getEncuesta")
     @Operation(summary = "Devuelve la encuesta más reciente asociada a un usuario y un contenido segun sus IDs")
