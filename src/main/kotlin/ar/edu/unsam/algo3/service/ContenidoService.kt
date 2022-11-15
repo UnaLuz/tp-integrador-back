@@ -11,7 +11,7 @@ class ContenidoService {
     @Autowired
     lateinit var ContenidoRepository: ContenidoRepository
 
-    fun getAllContenidos() = ContenidoRepository.getAllContenidos()
+    fun getAllContenidos(idUsuario: Int) = ContenidoRepository.getAllContenidos(idUsuario)
 
     fun getReporteContenidos(
         idUsuario: Int?,

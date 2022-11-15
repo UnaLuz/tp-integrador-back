@@ -15,22 +15,29 @@ class ContenidoRepository() : EntidadRepository<Contenido> {
         const val ID_CONTENIDO = "id_contenido"
         const val TITULO = "titulo"
         const val VELOCIDAD_PROM = "velocidad_prom"
-        const val PUNTAJE_MAX = "puntaje_max"
+        const val PUNTAJE_MAX = "puntaje_personal"
         const val PUNTAJE_PROM = "puntaje_prom"
         const val TIPO_CONTENIDO = "tipo_contenido"
-        const val USUARIO_RESPONDE = "usuario_responde"
+        const val USUARIO_RESPONDE = "id_usuario_responde"
+        const val ID_RESPUESTA = "id_respuesta_usuario"
     }
 
     // Queries
     val SELECT_INICIO =
-        """SELECT c.$ID_CONTENIDO, c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, max(re.puntaje) AS $PUNTAJE_MAX, avg(re.puntaje) AS $PUNTAJE_PROM, c.$TIPO_CONTENIDO AS $TIPO_CONTENIDO, ( CASE WHEN re.id_usuario_responde = 1 THEN true END) AS $USUARIO_RESPONDE
-        FROM ($DB_TABLE c)
-        LEFT JOIN (descarga d)
-        ON (d.id_contenido_documento = c.$ID_CONTENIDO OR d.id_contenido_musica = c.$ID_CONTENIDO)
-        LEFT JOIN respuesta_encuesta re
-        ON re.id_descarga_realizada = d.id_descarga
-        WHERE c.tipo_contenido LIKE 'musica' OR c.tipo_contenido LIKE 'documento' 
-        GROUP BY c.$ID_CONTENIDO;"""
+        """SELECT c.$ID_CONTENIDO, c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, avg(re.puntaje) AS $PUNTAJE_PROM, $PUNTAJE_MAX, $TIPO_CONTENIDO, t_mejor_puntaje.$USUARIO_RESPONDE, t_mejor_puntaje.$ID_RESPUESTA
+FROM (respuesta_encuesta re, descarga d, contenido c)
+LEFT JOIN (
+	SELECT c.$ID_CONTENIDO, re.puntaje AS $PUNTAJE_MAX, re.$USUARIO_RESPONDE, re.id_respuesta_encuesta AS $ID_RESPUESTA
+	FROM (respuesta_encuesta re, descarga d, contenido c)
+	WHERE re.id_descarga_realizada = d.id_descarga
+	AND (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)
+	AND re.id_usuario_responde = ?
+	GROUP BY c.id_contenido
+) t_mejor_puntaje
+ON c.id_contenido = t_mejor_puntaje.id_contenido
+WHERE re.id_descarga_realizada = d.id_descarga
+AND (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)
+GROUP BY c.id_contenido;"""
 
     val SELECT_REPORTE: String =
         """SELECT c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, avg(re.puntaje) AS $PUNTAJE_PROM
@@ -72,8 +79,9 @@ class ContenidoRepository() : EntidadRepository<Contenido> {
      *
      * @return Una lista de contenidos o NULL si ocurrió un error
      */
-    fun getAllContenidos(): List<Contenido>? =
-        selectAll(SELECT_INICIO) { resultSet -> resultSet.mapToContenidoInicio() }
+    fun getAllContenidos(idUsuario: Int): List<Contenido>? =
+        selectAll(SELECT_INICIO, getPreparedStatement(idUsuario))
+        { resultSet -> resultSet.mapToContenidoInicio() }
 
     /**
      * Devuelve la lista para el reporte
@@ -100,15 +108,28 @@ class ContenidoRepository() : EntidadRepository<Contenido> {
 
 }
 
-fun ResultSet.mapToContenidoInicio() = Contenido(
-    id = getInt(ContenidoRepository.ID_CONTENIDO),
-    titulo = getString(ContenidoRepository.TITULO),
-    velocidadPromedio = getDouble(ContenidoRepository.VELOCIDAD_PROM),
-    puntajeMax = getDouble(ContenidoRepository.PUNTAJE_MAX),
-    puntajePromedio = getDouble(ContenidoRepository.PUNTAJE_PROM),
-    tipoContenido = getString(ContenidoRepository.TIPO_CONTENIDO),
-    usuarioResponde = getBoolean(ContenidoRepository.USUARIO_RESPONDE)
-)
+fun ResultSet.mapToContenidoInicio(): Contenido {
+    val id = getInt(ContenidoRepository.ID_CONTENIDO)
+    val titulo = getString(ContenidoRepository.TITULO)
+    val velocidadPromedio = getDouble(ContenidoRepository.VELOCIDAD_PROM)
+    val puntajeMax = getDouble(ContenidoRepository.PUNTAJE_MAX)
+    val puntajePromedio = getDouble(ContenidoRepository.PUNTAJE_PROM)
+    val tipoContenido = getString(ContenidoRepository.TIPO_CONTENIDO)
+    var idUsuarioResponde: Int? = getInt(ContenidoRepository.USUARIO_RESPONDE)
+    idUsuarioResponde = if(this.wasNull()) null else idUsuarioResponde
+    var idRespuesta: Int? = getInt(ContenidoRepository.ID_RESPUESTA)
+    idRespuesta = if(this.wasNull()) null else idRespuesta
+    return Contenido(
+        id = id,
+        titulo = titulo,
+        velocidadPromedio = velocidadPromedio,
+        puntajeMax = puntajeMax,
+        puntajePromedio = puntajePromedio,
+        tipoContenido = tipoContenido,
+        idUsuarioResponde = idUsuarioResponde,
+        idRespuesta = idRespuesta
+    )
+}
 
 fun ResultSet.mapToContenidoReporte() = Contenido(
     id = null,
@@ -117,5 +138,6 @@ fun ResultSet.mapToContenidoReporte() = Contenido(
     puntajeMax = null,
     puntajePromedio = getDouble(ContenidoRepository.PUNTAJE_PROM),
     tipoContenido = getString(ContenidoRepository.TIPO_CONTENIDO),
-    usuarioResponde = getBoolean(ContenidoRepository.USUARIO_RESPONDE)
+    idUsuarioResponde = null,
+    idRespuesta = null
 )

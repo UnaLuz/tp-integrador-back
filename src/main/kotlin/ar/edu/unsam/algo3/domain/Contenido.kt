@@ -8,5 +8,6 @@ data class Contenido(
     val puntajeMax: Double?,
     val puntajePromedio: Double?,
     val tipoContenido: String,
-    val usuarioResponde: Boolean
+    val idUsuarioResponde: Int?,
+    val idRespuesta: Int?
 )

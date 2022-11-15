@@ -25,9 +25,9 @@ class GenericController {
 
     // Contenido endpoints
 
-    @GetMapping("")
+    @GetMapping("/{idUsuario}")
     @Operation(summary = "Devuelve todos los contenidos para la página de inicio")
-    fun getAllContenidos() = ContenidoService.getAllContenidos()
+    fun getAllContenidos(@PathVariable idUsuario: Int) = ContenidoService.getAllContenidos(idUsuario)
 
     @GetMapping("/getReporte")
     @Operation(summary = "Devuelve todos los contenidos para el reporte")
