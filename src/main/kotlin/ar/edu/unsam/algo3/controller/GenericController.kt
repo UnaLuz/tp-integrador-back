@@ -38,10 +38,10 @@ class GenericController {
 
     // Encuesta endpoints
 
-    @GetMapping("/getEncuestaById")
+    @GetMapping("/getEncuestaById/{idEncuesta}")
     @Operation(summary = "Devuelve la encuesta que corresponde al id recibido")
     fun getEncuestaById(
-        @RequestParam idEncuesta: Int
+        @PathVariable idEncuesta: Int
     ) = EncuestaService.getEncuestaById(idEncuesta)
 
     @GetMapping("/getEncuesta")
