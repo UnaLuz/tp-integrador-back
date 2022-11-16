@@ -50,7 +50,7 @@ GROUP BY c.id_contenido;"""
         INNER JOIN respuesta_encuesta re
         ON re.id_descarga_realizada = d.id_descarga
         GROUP BY c.id_contenido
-        ORDER BY %s DESC
+        ORDER BY %s %s
         LIMIT 5;"""
 
     val SELECT_REPORTE_WHERE: String =
@@ -62,7 +62,7 @@ GROUP BY c.id_contenido;"""
         ON re.id_descarga_realizada = d.id_descarga
         WHERE re.id_usuario_responde = ?
         GROUP BY c.id_contenido
-        ORDER BY %s DESC
+        ORDER BY %s %s
         LIMIT 5;"""
 
     /**
@@ -101,8 +101,13 @@ GROUP BY c.id_contenido;"""
         when (id) {
             null -> SELECT_REPORTE
             else -> SELECT_REPORTE_WHERE
-        }.format(orderBy.colName)
+        }.format(orderBy.colName, orderQuery(orderBy))
 
+    private fun orderQuery(reporteOrderBy: ReporteOrderBy) =
+            when (reporteOrderBy) {
+          ReporteOrderBy.TITULO -> "ASC"
+                else -> "DESC"
+            }
     private fun getPreparedStatement(id: Int?) = id?.let { value ->
         { statement: PreparedStatement ->
             statement.setInt(1, value)
