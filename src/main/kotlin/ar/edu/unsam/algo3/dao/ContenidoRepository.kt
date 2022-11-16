@@ -93,7 +93,7 @@ GROUP BY c.id_contenido;"""
      */
     private fun getReporteQuery(id: Int?, orderBy: ReporteOrderBy) =
         when (id) {
-            null -> SELECT_REPORTE.format("", orderBy.colName)
+            null -> SELECT_REPORTE.format("", orderBy.colName, orderQuery(orderBy))
             else -> SELECT_REPORTE.format(REPORTE_WHERE, orderBy.colName, orderQuery(orderBy))
         }
 
