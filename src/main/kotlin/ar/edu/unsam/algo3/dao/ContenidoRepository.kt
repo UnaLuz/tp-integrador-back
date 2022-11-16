@@ -25,34 +25,34 @@ class ContenidoRepository() : EntidadRepository<Contenido> {
     // Queries
     val SELECT_INICIO =
         """SELECT c.$ID_CONTENIDO, c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, avg(re.puntaje) AS $PUNTAJE_PROM, $PUNTAJE_MAX, $TIPO_CONTENIDO, t_mejor_puntaje.$USUARIO_RESPONDE, t_mejor_puntaje.$ID_RESPUESTA
-FROM (descarga d)
-RIGHT JOIN (contenido c)
-ON (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)
-LEFT JOIN respuesta_encuesta re
-ON re.id_descarga_realizada = d.id_descarga
-LEFT JOIN (
-	SELECT c.$ID_CONTENIDO, re.puntaje AS $PUNTAJE_MAX, re.$USUARIO_RESPONDE, re.id_respuesta_encuesta AS $ID_RESPUESTA
-	FROM (respuesta_encuesta re, descarga d, contenido c)
-	WHERE re.id_descarga_realizada = d.id_descarga
-	AND (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)
-	AND re.id_usuario_responde = ?
-	GROUP BY c.id_contenido
-) t_mejor_puntaje
-ON c.id_contenido = t_mejor_puntaje.id_contenido
-WHERE c.tipo_contenido <> 'video'
-GROUP BY c.id_contenido;"""
+            FROM (descarga d)
+            RIGHT JOIN (contenido c)
+            ON (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)
+            LEFT JOIN respuesta_encuesta re
+            ON re.id_descarga_realizada = d.id_descarga
+            LEFT JOIN (
+	            SELECT c.$ID_CONTENIDO, re.puntaje AS $PUNTAJE_MAX, re.$USUARIO_RESPONDE, re.id_respuesta_encuesta AS $ID_RESPUESTA
+	            FROM (respuesta_encuesta re, descarga d, contenido c)
+	            WHERE re.id_descarga_realizada = d.id_descarga
+	            AND (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)
+	            AND re.id_usuario_responde = ?
+	            GROUP BY c.id_contenido
+            ) t_mejor_puntaje
+            ON c.id_contenido = t_mejor_puntaje.id_contenido
+            WHERE c.tipo_contenido <> 'video'
+            GROUP BY c.id_contenido;"""
 
     val SELECT_REPORTE: String =
         """SELECT c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, avg(re.puntaje) AS $PUNTAJE_PROM, c.$TIPO_CONTENIDO
-        FROM (contenido c)
-        LEFT JOIN (descarga d)
-        ON (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)
-        INNER JOIN respuesta_encuesta re
-        ON re.id_descarga_realizada = d.id_descarga
-        %s
-        GROUP BY c.id_contenido
-        ORDER BY %s %s
-        LIMIT 5;"""
+           FROM (descarga d)
+           RIGHT JOIN (contenido c)
+           ON (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)
+           LEFT JOIN respuesta_encuesta re
+           ON re.id_descarga_realizada = d.id_descarga
+           %s
+           GROUP BY c.id_contenido
+           ORDER BY %s %s
+           LIMIT 5;"""
 
     val REPORTE_WHERE = "WHERE re.id_usuario_responde = ?"
 
