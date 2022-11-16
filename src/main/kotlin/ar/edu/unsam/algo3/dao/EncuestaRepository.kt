@@ -21,25 +21,10 @@ class EncuestaRepository() : EntidadRepository<Encuesta> {
     }
 
     // Queries
-    private val SELECT =
-        """SELECT $COL_ID_Encuesta, $COL_RESUMENPOS, $COL_RESUMENNEG, $COL_PUNTAJE
-        FROM $DB_TABLE;"""
-
     private val SELECT_BY_ID =
         """SELECT $COL_ID_Encuesta, $COL_RESUMENPOS, $COL_RESUMENNEG, $COL_PUNTAJE
         FROM $DB_TABLE
         WHERE $DB_TABLE.$COL_ID_Encuesta = ?;"""
-
-    private val SELECT_ONE = """
-        SELECT re.$COL_ID_Encuesta, re.$COL_RESUMENPOS, re.$COL_RESUMENNEG, re.$COL_PUNTAJE
-        FROM contenido c
-        INNER JOIN descarga d
-        ON (d.id_contenido_documento = ? OR d.id_contenido_musica = ?)
-        INNER JOIN $DB_TABLE re
-        ON re.$COL_DESCARGA = d.id_descarga
-        WHERE re.$COL_USUARIO = ? AND c.id_contenido = ?
-        ORDER BY re.$COL_ID_Encuesta DESC
-        LIMIT 1;"""
 
     private val INSERT =
         """INSERT INTO $DB_TABLE ($COL_RESUMENPOS, $COL_RESUMENNEG, $COL_PUNTAJE, $COL_DESCARGA, $COL_USUARIO)
@@ -51,24 +36,6 @@ class EncuestaRepository() : EntidadRepository<Encuesta> {
         WHERE $COL_ID_Encuesta = ?;"""
 
     private val DELETE = "DELETE FROM $DB_TABLE WHERE $COL_ID_Encuesta = ?;"
-
-    fun selectAll(): List<Encuesta>? =
-        selectAll(SELECT) { it.mapToEncuesta() }
-
-    /**
-     * Dado un [idUsuario] y un [idContenido]
-     *  busca la última respuesta de encuesta
-     *  de ese usuario sobre la descarga de ese contenido
-     *
-     *  @return [Encuesta] o [NULL] si ocurrió un error en la busqueda
-     */
-    fun selectOne(idUsuario: Int, idContenido: Int): Encuesta? =
-        selectOne(SELECT_ONE, { stmt ->
-            stmt.setInt(1, idContenido)
-            stmt.setInt(2, idContenido)
-            stmt.setInt(3, idUsuario)
-            stmt.setInt(4, idContenido)
-        }) { it.mapToEncuesta() }
 
     fun getEncuestaById(idEncuesta: Int): Encuesta? =
         selectOne(SELECT_BY_ID, { stmt ->

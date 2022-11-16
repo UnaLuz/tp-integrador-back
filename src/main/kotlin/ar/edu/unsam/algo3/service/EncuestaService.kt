@@ -31,6 +31,4 @@ class EncuestaService {
         return EncuestaRepository.getEncuestaById(idEncuesta)
     }
 
-    fun getEncuestaByUsuarioAndContenido(idUsuario: Int, idContenido: Int): Encuesta? =
-        EncuestaRepository.selectOne(idUsuario = idUsuario, idContenido = idContenido)
 }

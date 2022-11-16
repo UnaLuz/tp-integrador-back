@@ -23,14 +23,6 @@ class DescargaRepository : EntidadRepository<Descarga> {
 
     val SELECT = "SELECT * FROM $DB_TABLE WHERE $COL_ID_DESCARGA = LAST_INSERT_ID();"
 
-    val INSERT_TRANSACTION = """
-        START TRANSACTION;
-          INSERT INTO $DB_TABLE ($COL_VELOCIDAD, $COL_ID_USUARIO, %s)
-          VALUES (?, ?, ?);
-          SELECT LAST_INSERT_ID();
-        COMMIT;
-    """.trimIndent()
-
     /**
      * Inserta una nueva descarga en la base de datos
      *

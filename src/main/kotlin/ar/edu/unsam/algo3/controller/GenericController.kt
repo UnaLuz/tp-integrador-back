@@ -44,13 +44,6 @@ class GenericController {
         @PathVariable idEncuesta: Int
     ) = EncuestaService.getEncuestaById(idEncuesta)
 
-    @GetMapping("/getEncuesta")
-    @Operation(summary = "Devuelve la encuesta más reciente asociada a un usuario y un contenido segun sus IDs")
-    fun getEncuestaByUsuarioAndContenido(
-        @RequestParam idUsuario: Int,
-        @RequestParam idContenido: Int
-    ) = EncuestaService.getEncuestaByUsuarioAndContenido(idUsuario, idContenido)
-
     @PostMapping("/createEncuesta")
     @Operation(summary = "Crea una nuevo Encuesta")
     fun createEncuesta(@RequestBody EncuestaBody: Encuesta): Int {
@@ -70,8 +63,4 @@ class GenericController {
     @Operation(summary = "generar descarga de contenido y devuelve el ID de la descarga generada")
     fun createDescarga(@RequestBody descarga: Descarga): Int = descargaService.createDescarga(descarga)
 
-    /* @RequestMapping("/editEncuesta", params = ["userId","contenidoId"])
-     //@GetMapping("/usuario/{user}")
-     @Operation(summary = "Devuelve un usuario que coincida user y pass")
-     fun editEncuesta(@RequestParam user:String, pass:Int) = UsuarioService.getUsuarioLogin(user,pass)*/
 }

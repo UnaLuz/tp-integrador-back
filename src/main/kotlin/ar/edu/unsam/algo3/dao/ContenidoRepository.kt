@@ -49,21 +49,12 @@ GROUP BY c.id_contenido;"""
         ON (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)
         INNER JOIN respuesta_encuesta re
         ON re.id_descarga_realizada = d.id_descarga
+        %s
         GROUP BY c.id_contenido
         ORDER BY %s %s
         LIMIT 5;"""
 
-    val SELECT_REPORTE_WHERE: String =
-        """SELECT c.$TITULO, avg(d.velocidad) AS $VELOCIDAD_PROM, avg(re.puntaje) AS $PUNTAJE_PROM, c.$TIPO_CONTENIDO
-        FROM (contenido c)
-        LEFT JOIN (descarga d)
-        ON (d.id_contenido_documento = c.id_contenido OR d.id_contenido_musica = c.id_contenido)
-        INNER JOIN respuesta_encuesta re
-        ON re.id_descarga_realizada = d.id_descarga
-        WHERE re.id_usuario_responde = ?
-        GROUP BY c.id_contenido
-        ORDER BY %s %s
-        LIMIT 5;"""
+    val REPORTE_WHERE = "WHERE re.id_usuario_responde = ?"
 
     /**
      * Busca la lista de contenidos con los datos necesarios
@@ -97,11 +88,14 @@ GROUP BY c.id_contenido;"""
             prepareStatement = getPreparedStatement(idUsuario)
         ) { resultSet -> resultSet.mapToContenidoReporte() }
 
+    /**
+     * Si hay id se agrega el WHERE, si no lo hay se deja como linea vacía
+     */
     private fun getReporteQuery(id: Int?, orderBy: ReporteOrderBy) =
         when (id) {
-            null -> SELECT_REPORTE
-            else -> SELECT_REPORTE_WHERE
-        }.format(orderBy.colName, orderQuery(orderBy))
+            null -> SELECT_REPORTE.format("", orderBy.colName)
+            else -> SELECT_REPORTE.format(REPORTE_WHERE, orderBy.colName, orderQuery(orderBy))
+        }
 
     private fun orderQuery(reporteOrderBy: ReporteOrderBy) =
             when (reporteOrderBy) {
